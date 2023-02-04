@@ -6,5 +6,6 @@ export const {
     HASH_SECRET,
     SMS_SID,
     SMS_AUTH_TOKEN,
-    SMS_FROM_NUMBER
+    SMS_FROM_NUMBER,
+    DB_URL
 } = process.env;

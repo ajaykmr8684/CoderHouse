@@ -1,5 +1,6 @@
 import otpService from "../services/otp-service";
 import hashService from "../services/hash-service";
+import userService from "../services/user-service";
 
 /**
  * This class handles all Auth controller methods like SEND OTP
@@ -61,7 +62,7 @@ class AuthController
             res.status(400).json({message: "All fields are required!"})
         }
         const [hashedOtp, expires] = hash.split('.');
-        if(Date.now() > expires)
+        if(Date.now() > +expires)
         {
             res.status(400).json({message: "OTP expired!"})
         }
@@ -78,6 +79,19 @@ class AuthController
         let user;
         let access_token;
         let refresh_token;
+        try
+        {
+            user = await userService.findUser({phone: phone});
+            if(!user)
+            {
+                user= await userService.createUser({phone: phone});
+            }
+        } catch (error)
+        {
+            console.log(error);
+            res.status(500).json({message: "Something went wrong."})
+        }
+        
 
 
 

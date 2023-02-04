@@ -47,7 +47,7 @@ class OtpService
 
     /**
      * Method verifies the received OTP by regenerating Hash and
-     * Matching the
+     * then matching the received hash from client.
      * 
      * @method
      * @param {String} hashedOtp - Received hashed OTP 
