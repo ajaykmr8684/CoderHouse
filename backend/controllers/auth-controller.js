@@ -1,6 +1,7 @@
 import otpService from "../services/otp-service";
 import hashService from "../services/hash-service";
 import userService from "../services/user-service";
+import tokenService from "../services/token-service";
 
 /**
  * This class handles all Auth controller methods like SEND OTP
@@ -32,11 +33,12 @@ class AuthController
         //Send OTP
         try
         {
-            await otpService.sendBySMS(phone, OTP);
+            //await otpService.sendBySMS(phone, OTP);
             return res.json (
                 {
                     hash:  `${hashedOtp}.${expires}`,
-                    phone: phone
+                    phone: phone,
+                    otp: OTP
                 }
             )
         }
@@ -77,8 +79,6 @@ class AuthController
         }
 
         let user;
-        let access_token;
-        let refresh_token;
         try
         {
             user = await userService.findUser({phone: phone});
@@ -91,10 +91,19 @@ class AuthController
             console.log(error);
             res.status(500).json({message: "Something went wrong."})
         }
+
+        //TOKEN
+        const {accessToken, refreshToken} = await tokenService.generateTokens({_id: user._id, activated: false});
         
+        //Creates Cookie
+        res.cookie('refreshToken', refreshToken,  {
+            maxAge: 1000 * 60 * 60 * 24 * 30,
+            httpOnly: true
+        });
 
 
-
+        //send response back
+        res.json({accessToken: accessToken});
     }
 }
 
